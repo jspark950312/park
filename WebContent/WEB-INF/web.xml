@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd" id="WebApp_ID" version="4.0">
+  <display-name>ErpProject</display-name>
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.htm</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>default.html</welcome-file>
+    <welcome-file>default.htm</welcome-file>
+    <welcome-file>default.jsp</welcome-file>
+  </welcome-file-list>
+  
+     <!--  응답 상태 코드별로 에러페이지 지정하기 (p146) /아래에 위치
+    <error-page>
+			  <error-code>에러코드</error-code>
+			  <location>에러코드발생시 보여줄 커스텀페이지</location>   =>full path에서 컨패 뒤의 주소 /error/error404.jsp
+  	</error-page>
+  -->
+  
+
+<!--    <error-page>
+		  <error-code>404</error-code>
+		  <location>/error/error404.jsp</location>
+  </error-page>  -->
+
+<!--  p585. 서블릿 컨텍스트 리스너 등록 /환경설정 -->  
+ <listener>
+	<listener-class>jdbc.conn.DBCPInitListener</listener-class>
+</listener>
+<!-- getInitParameter("poolConfig"); -->
+<context-param>
+	<param-name>poolConfig</param-name>
+	<param-value>
+	<!--  DBCPInit 50line String driverClass = prop.getProperty("jdbcdriver"); 와 동일해야됨-->
+		jdbcDriver=com.mysql.jdbc.Driver
+<!-- 		참고 jdbc:mysql://ip주소 : port번호/DB스키마명?characterEncoding=UTF-8&serverTimezone=UTC -->
+  	jdbcUrl=jdbc:mysql://localhost:3306/erpdb?useUnicode=true&amp;characterEncoding=utf8
+  	<!--  board => MySQL의 보드 &amp;  -->
+  	dbUser=erpman
+  	dbPass=erpman123
+		validationQuery=select 1
+		minIdle=3
+		maxTotal=30
+		poolName=erpdb
+		<!--  jdbc:apache:commons:dbcp:board의미 -->
+	</param-value>
+</context-param>
+<!--  mvc컨트롤러 코드 p.588-->
+<!--  .do로 요청이 들어오면 ControllerUsingURI이름의 서블릿을 찾아 
+				(실제로 동작하는 클래스는 mvc.controller.ControllerUsingURI.java)-->
+<servlet>
+	<servlet-name>ControllerUsingURI</servlet-name>
+	<servlet-class>mvc.controller.ControllerUsingURI</servlet-class> <!-- 패키지명.클래스명 -->
+	<init-param>
+		<param-name>configFile</param-name><!-- init 파라미터명 -->
+		<param-value>/WEB-INF/commandControllerURI.properties</param-value>
+	</init-param>
+</servlet>
+
+<servlet-mapping>
+	<servlet-name>ControllerUsingURI</servlet-name>
+	<url-pattern>*.do</url-pattern>
+</servlet-mapping>
+
+<!--  로그인 여부 검사 필터 p612 필터명과 클래스명 달라도 됨 -->
+<!-- <filter>
+	<filter-name>LoginCheckFilter</filter-name>
+	<filter-class>filter.LoginCheckFilter</filter-class>
+</filter>
+
+<filter-mapping>
+	<filter-name>LoginCheckFilter</filter-name>
+	<url-pattern>/changePwd.do</url-pattern>
+</filter-mapping>      -->
+</web-app>
